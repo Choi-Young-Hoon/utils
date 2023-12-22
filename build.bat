@@ -3,6 +3,7 @@
 for /f %%A in ('cd') do set root_path=%%A
 call :submodule_init
 call :googletest_build
+call :utils_build
 
 :submodule_init
     git submodule init
@@ -17,3 +18,11 @@ call :googletest_build
     make -j10
     cd %root_path%
     exit /b
+
+:utils_build
+    cd %root_path%
+    mkdir cmake_release_build
+    cd cmake_release_build
+    cmake -DCMAKE_BUILD_TYPE=Release .. -G "MinGW Makefiles"
+    make -j10
+    make install

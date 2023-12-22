@@ -1,4 +1,4 @@
-set (SOURCES )
+set (SOURCES Logger.cpp)
 
 
 

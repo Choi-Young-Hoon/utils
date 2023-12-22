@@ -1,5 +1,6 @@
 cmake-build-debug
 build
+cmake_release_build
 
 # Prerequisites
 *.d

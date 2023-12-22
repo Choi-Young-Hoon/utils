@@ -16,7 +16,9 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 include_directories (${INCLUDE_DIR})
 
-add_library (${PROJECT_NAME})
+add_library (${PROJECT_NAME}
+        src/logger/Logger.cpp
+        include/logger/Logger.hpp)
 
 add_subdirectory (src)
 add_subdirectory (test)
