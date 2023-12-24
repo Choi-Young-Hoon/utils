@@ -1,4 +1,5 @@
-set (SOURCES Logger.cpp)
+set (SOURCES ULogger.cpp
+             ULoggerUIWriter.cpp)
 
 
 

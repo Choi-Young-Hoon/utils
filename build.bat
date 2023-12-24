@@ -14,7 +14,7 @@ call :utils_build
     cd ./thirdparty/googletest
     mkdir build
     cd build
-    cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_MAKE_PROGRAM=make.exe -G "MSYS Makefiles" ..
+    cmake -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_MAKE_PROGRAM=make.exe -G "MinGW Makefiles" ..
     make -j10
     cd %root_path%
     exit /b
