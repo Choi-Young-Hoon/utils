@@ -45,6 +45,25 @@ namespace utils {
             return this->threadList.size();
         }
 
+        void stop() {
+            {
+                std::unique_lock<std::mutex> lockGuard(this->mutex);
+                this->isRunning = false;
+            }
+            this->condition.notify_all();
+
+            for (auto& thread : this->threadList) {
+                if (thread.joinable() == false) {
+                    continue;
+                }
+                thread.join();
+            }
+        }
+
+        int getTaskQueueSize() {
+            return this->taskQueue.size();
+        }
+
     private:
         void createThread(unsigned int threadCount) {
             for (unsigned int i = 0; i < threadCount; i++) {
@@ -67,19 +86,6 @@ namespace utils {
                 });
 
                 this->isRunning = true;
-            }
-        }
-
-
-        void stop() {
-            {
-                std::unique_lock<std::mutex> lockGuard(this->mutex);
-                this->isRunning = false;
-            }
-            this->condition.notify_all();
-
-            for (auto& thread : this->threadList) {
-                thread.join();
             }
         }
 

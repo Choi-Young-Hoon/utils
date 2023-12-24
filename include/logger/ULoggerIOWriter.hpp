@@ -5,6 +5,7 @@
 #include <memory>
 #include <fstream>
 
+#include "logger/ULogLevel.hpp"
 #include "thread/UThreadPool.hpp"
 
 namespace utils {
@@ -19,7 +20,14 @@ namespace utils {
     public:
         bool open(std::string& filePath);
         bool isOpen();
-        bool write(std::string&& text, std::string&& sourceFile = "", int line = 0);
+        bool write(LOG_LEVEL logLevel, std::string&& text, std::string&& sourceFile = "", int sourceLine = 0);
+        void close();
+        void stop();
+
+        unsigned int getTaskQueueSize();
+
+    private:
+        std::string getLogTime();
 
     private:
         std::fstream fileStream;

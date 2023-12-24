@@ -1,5 +1,6 @@
 set (SOURCES ULogger.cpp
-             ULoggerUIWriter.cpp)
+             ULoggerIOWriter.cpp
+             ULogLevel.cpp)
 
 
 

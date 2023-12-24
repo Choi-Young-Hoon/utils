@@ -31,4 +31,13 @@ namespace utils {
         }
         return this->loggerIOWriterMap[filePath];
     }
+
+    void ULogger::stop() {
+        for (auto& iter : this->loggerIOWriterMap) {
+            iter.second->close();
+            iter.second->stop();
+        }
+
+        this->loggerIOWriterMap.clear();
+    }
 }

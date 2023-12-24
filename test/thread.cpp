@@ -7,9 +7,6 @@
 TEST(THREAD, UThreadPool) {
     utils::UThreadPool<int> threadPool;
 
-
-    std::cout << "CPU Core Count: " << std::thread::hardware_concurrency() << std::endl;
-    std::cout << "ThreadPool Thread Count: " << threadPool.getThreadCount() << std::endl;
     ASSERT_TRUE(threadPool.getThreadCount() == std::thread::hardware_concurrency());
 
     auto taskResult = threadPool.enqueue([&](){
@@ -17,6 +14,5 @@ TEST(THREAD, UThreadPool) {
     });
 
     int result = taskResult.get();
-    std::cout << "Result: " << result << std::endl;
     ASSERT_TRUE(result == 100);
 }

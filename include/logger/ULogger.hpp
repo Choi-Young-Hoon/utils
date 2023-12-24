@@ -16,6 +16,8 @@ namespace utils {
 
         ULoggerIOWriterPtr getLoggerIOWriter(std::string&& filePath);
 
+        void stop();
+
     private:
         explicit ULogger();
         virtual ~ULogger();
