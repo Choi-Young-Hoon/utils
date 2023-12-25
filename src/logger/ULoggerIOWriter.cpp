@@ -3,7 +3,8 @@
 #include <sstream>
 #include <chrono>
 #include <iomanip>
-#include <ctime>
+#include <format>
+
 
 namespace utils {
     std::shared_ptr<ULoggerIOWriter> ULoggerIOWriter::createLogger(std::string& filePath) {
@@ -40,14 +41,15 @@ namespace utils {
     }
 
     bool ULoggerIOWriter::write(LOG_LEVEL logLevel, std::string&& text, std::string&& sourceFile, int sourceLine) {
-
-        std::stringstream log;
-        log << this->getLogTime() << " " << sourceFile << " Line: " << sourceLine << " - [" << logLevelToString(logLevel) << "] " << text << std::endl;
-
+        std::string log = std::format("{0} {1} Line: {2} - [{3}] {4}\n", this->getLogTime()
+                                                                            , sourceFile
+                                                                            , sourceLine
+                                                                            , logLevelToString(logLevel)
+                                                                            , text);
         this->threadPool.enqueue([this](std::string log){
             this->fileStream << log;
             this->fileStream.flush();
-        }, log.str());
+        }, log);
 
         return true;
     }
@@ -66,16 +68,8 @@ namespace utils {
 
     std::string ULoggerIOWriter::getLogTime() {
         auto now = std::chrono::system_clock::now();
-        std::time_t time = std::chrono::system_clock::to_time_t(now);
-        std::tm tm       = *std::localtime(&time);
 
-        auto miliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
-
-        std::stringstream stringStream;
-        stringStream << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
-        stringStream << "." << std::setfill('0') << std::setw(3) << miliseconds.count();
-
-        return stringStream.str();
+        return std::format("{:%Y-%m-%d %H:%M:%S}", now);
     }
 
 };
