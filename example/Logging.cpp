@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ULogger.hpp"
 
 int main() {
