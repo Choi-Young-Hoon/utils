@@ -12,12 +12,12 @@ set (CMAKE_CXX_FLAGS_DEBUG -g)
 set (INSTALL_DIR ${CMAKE_SOURCE_DIR}/build)
 set (INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
-
-include_directories (${INCLUDE_DIR})
+include_directories (${INCLUDE_DIR}
+                     thirdparty/googletest/googletest/include)
 
 add_library (${PROJECT_NAME})
 
+add_subdirectory (thirdparty/googletest)
 add_subdirectory (src)
 add_subdirectory (test)
 
