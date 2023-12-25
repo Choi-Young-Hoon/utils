@@ -17,6 +17,7 @@ include_directories (${INCLUDE_DIR}
 
 add_library (${PROJECT_NAME})
 
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 add_subdirectory (thirdparty/googletest)
 add_subdirectory (src)
 add_subdirectory (test)

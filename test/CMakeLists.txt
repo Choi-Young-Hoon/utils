@@ -15,3 +15,5 @@ target_link_libraries(${UTIL_TEST} PRIVATE ${PROJECT_NAME}
                                             gmock
                                             gmock_main)
 
+install (TARGETS ${UTIL_TEST}
+         DESTINATION ${INSTALL_DIR}/test)
