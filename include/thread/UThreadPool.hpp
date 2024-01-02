@@ -29,10 +29,6 @@ namespace utils {
             std::future<R> result = task->get_future();
             {
                 std::unique_lock<std::mutex> lockGuard(this->mutex);
-                if (this->isRunning == false) {
-                    throw std::runtime_error("Thread pool is stopped");
-                }
-
                 this->taskQueue.emplace([task]() {
                     (*task)();
                 });

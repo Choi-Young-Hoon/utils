@@ -15,8 +15,7 @@ set (INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 include_directories (${INCLUDE_DIR}
                      thirdparty/googletest/googletest/include)
 
-add_library (${PROJECT_NAME}
-        example/ThreadPool.cpp)
+add_library (${PROJECT_NAME})
 
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 add_subdirectory (thirdparty/googletest)

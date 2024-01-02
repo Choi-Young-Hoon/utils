@@ -1,6 +1,7 @@
 set(SOURCES main.cpp
             thread.cpp
             logger.cpp
+            timer.cpp
 )
 
 set(UTIL_TEST util_test)
