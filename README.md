@@ -8,11 +8,13 @@
 <pre>$ make -j10</pre>
 <pre>$ make install</pre>
 
+<h2> Install vcpkg </h2>
+<pre> <a href="https://vcpkg.io/en/">https://vcpkg.io/en/</a></pre>
+
 <h2> Windows Build </h2>
-<h3> - Install tools (CMake) </h3>
-<pre><a href="https://cmake.org/download">https://cmake.org/download</a></pre>
+<h3> - Install package </h3>
+<pre> $ vcpkg install gtest:x64-mingw-dynamic </pre>
 
-<h1> Linux Build </h1>
-<h3> - Package install </h3>
-<pre>$ sudo apt-get install cmake make g++</pre>
-
+<h2> Linux Build </h2>
+<h3> - Install package </h3>
+<pre> $ vcpkg install gtest </pre>
