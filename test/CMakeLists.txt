@@ -6,15 +6,13 @@ set(SOURCES main.cpp
 
 set(UTIL_TEST util_test)
 
-enable_testing() # build/test 폴더 생성됨
+#enable_testing() # build/test 폴더 생성됨
 
 add_executable(${UTIL_TEST} ${SOURCES})
 
+find_package(GTest CONFIG REQUIRED)
 target_link_libraries(${UTIL_TEST} PRIVATE ${PROJECT_NAME}
-                                            gtest
-                                            gtest_main
-                                            gmock
-                                            gmock_main)
-
-install (TARGETS ${UTIL_TEST}
-         DESTINATION ${INSTALL_DIR}/test)
+                                            GTest::gtest
+                                            GTest::gtest_main
+                                            GTest::gmock
+                                            GTest::gmock_main)

@@ -12,13 +12,10 @@ set (CMAKE_CXX_FLAGS_DEBUG -g)
 set (INSTALL_DIR ${CMAKE_SOURCE_DIR}/build)
 set (INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
-include_directories (${INCLUDE_DIR}
-                     thirdparty/googletest/googletest/include)
+include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIR})
 
 add_library (${PROJECT_NAME})
 
-set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
-add_subdirectory (thirdparty/googletest)
 add_subdirectory (src)
 add_subdirectory (test)
 
