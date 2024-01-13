@@ -9,18 +9,18 @@ set (CMAKE_CXX_FLAGS -Wall)
 set (CMAKE_CXX_FLAGS_RELEASE -O3)
 set (CMAKE_CXX_FLAGS_DEBUG -g)
 
-set (INSTALL_DIR ${CMAKE_SOURCE_DIR}/build)
-set (INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
-
-include_directories(${PROJECT_NAME} PUBLIC ${INCLUDE_DIR})
+set (UTILS_INSTALL_DIR ${CMAKE_SOURCE_DIR}/build/utils)
+set (UTILS_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
 
 add_library (${PROJECT_NAME})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${UTILS_INCLUDE_DIR})
 
 add_subdirectory (src)
 add_subdirectory (test)
 
 install (TARGETS ${PROJECT_NAME}
-         DESTINATION ${INSTALL_DIR}/lib)
+         DESTINATION ${UTILS_INSTALL_DIR}/lib)
 install (DIRECTORY ${INCLUDE_DIR}
-         DESTINATION ${INSTALL_DIR}
+         DESTINATION ${UTILS_INSTALL_DIR}
          FILES_MATCHING PATTERN "*.hpp")
