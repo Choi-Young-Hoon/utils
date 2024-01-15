@@ -14,10 +14,13 @@ set (UTILS_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_library (${PROJECT_NAME})
 
-target_include_directories(${PROJECT_NAME} PUBLIC ${UTILS_INCLUDE_DIR})
+find_package(Boost REQUIRED COMPONENTS system)
+target_include_directories(${PROJECT_NAME} PUBLIC ${UTILS_INCLUDE_DIR}
+                                                  ${Boost_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PUBLIC Boost::system)
 
-add_subdirectory (src)
-add_subdirectory (test)
+add_subdirectory(src)
+add_subdirectory(test)
 
 install (TARGETS ${PROJECT_NAME}
          DESTINATION ${UTILS_INSTALL_DIR}/lib)

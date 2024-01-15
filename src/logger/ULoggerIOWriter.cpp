@@ -42,10 +42,10 @@ namespace utils {
 
     bool ULoggerIOWriter::write(LOG_LEVEL logLevel, std::string&& text, std::string&& sourceFile, int sourceLine) {
         std::string log = std::format("{0} {1} Line: {2} - [{3}] {4}\n", this->getLogTime()
-                                                                            , sourceFile
-                                                                            , sourceLine
-                                                                            , logLevelToString(logLevel)
-                                                                            , text);
+                                                                       , sourceFile
+                                                                       , sourceLine
+                                                                       , logLevelToString(logLevel)
+                                                                       , text);
         this->threadPool.enqueue([this](std::string log){
             this->fileStream << log;
             this->fileStream.flush();

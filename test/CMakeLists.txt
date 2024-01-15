@@ -2,6 +2,7 @@ set(SOURCES main.cpp
             thread.cpp
             logger.cpp
             timer.cpp
+            network.cpp
 )
 
 set(UTIL_TEST util_test)
