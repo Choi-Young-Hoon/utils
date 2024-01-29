@@ -2,12 +2,13 @@ set(SOURCES main.cpp
             thread.cpp
             logger.cpp
             timer.cpp
-            network.cpp
+            network_udp.cpp
+            network_tcp.cpp
 )
 
 set(UTIL_TEST util_test)
 
-#enable_testing() # build/test 폴더 생성됨
+enable_testing() # build/test 폴더 생성됨
 
 add_executable(${UTIL_TEST} ${SOURCES})
 

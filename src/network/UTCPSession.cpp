@@ -13,34 +13,72 @@ namespace utils {
 
 	}
 
-	int UTCPSession::recv(ByteBuffer* buffer) {
-		boost::system::error_code error;
-		
-		int size = this->socket.read_some(boost::asio::buffer(this->recvBuffer), error);
-		if (error = boost::asio::error::eof) {
-			// 클라이언트 연결 종료
-			std::cout << __FUNCTION__ << " Clinet close " << error.message() << std::endl;
-			return -1;
-		} else if (error) {
-			// 에러 처리
-			std::cout << __FUNCTION__ << " Error: " << error.message() << std::endl;
-			return error.value();
-		}
-
-		buffer->setData(this->recvBuffer.data(), size);
-
-		return size;
+	std::shared_ptr<UTCPSession> UTCPSession::createSession(boost::asio::ip::tcp::socket socket) {
+		return std::make_shared<UTCPSession>(std::move(socket));
 	}
 
-	int UTCPSession::send(const ByteBuffer& buffer) {
-		boost::system::error_code error;
+	void UTCPSession::closeSocket() {
+		this->socket.close();
+	}
 
-		int size = this->socket.write_some(boost::asio::buffer(buffer), error);
-		if (error) {
-			// 에러 처리
-			std::cout << __FUNCTION__ << " Error: " << error.message() << std::endl;
-			return error.value();
+	size_t UTCPSession::recv(UByteBuffer* buffer, int recvBufferSize, UResult* result) {
+		if (result == nullptr ||
+			buffer == nullptr) {
+			return -1;
 		}
-		return 0;
+		buffer->resize(recvBufferSize);
+
+		boost::system::error_code error;
+		size_t size = this->socket.read_some(boost::asio::buffer(*buffer), error);
+		if (error) {
+			return result->failedReturnValue(error.value(), error.message());
+		}
+
+		return result->successReturnValue(size);
+	}
+
+	size_t UTCPSession::send(const UByteBuffer& buffer, UResult* result) {
+		if (result == nullptr) {
+			return -1;
+		}
+
+		boost::system::error_code error;
+		size_t size = this->socket.write_some(boost::asio::buffer(buffer), error);
+		if (error) {
+			return result->failedReturnValue(error.value(), error.message());
+		}
+
+		return result->successReturnValue(size);
+	}
+
+	void UTCPSession::asyncSend(const UByteBuffer& buffer) {
+		this->socket.async_read_some(boost::asio::buffer(this->recvBuffer),
+			[this](boost::system::error_code ec, std::size_t bytesSent) {
+				if (!ec && bytesSent > 0) {
+					
+				}
+			});
+	}
+
+	void UTCPSession::asyncRecv(int recvBufferSize, UAsyncCallback callback) {
+		this->recvBuffer.resize(recvBufferSize);
+
+		auto self(shared_from_this());
+		boost::asio::async_write(this->socket, boost::asio::buffer(this->recvBuffer),
+			[=](boost::system::error_code ec, std::size_t bytesRecv) {
+				if (!ec && bytesRecv > 0) {
+					callback(this->recvBuffer, bytesRecv);
+				}
+			});
+	}
+
+	void UTCPSession::asyncRecv(UAsyncCallback callback) {
+		auto self(shared_from_this());
+		boost::asio::async_read(this->socket, boost::asio::dynamic_buffer(this->recvBuffer),
+			[=](boost::system::error_code ec, std::size_t bytesRecv) {
+				if (!ec && bytesRecv > 0) {
+					callback(this->recvBuffer, bytesRecv);
+				}
+			});
 	}
 };

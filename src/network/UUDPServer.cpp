@@ -4,74 +4,75 @@
 
 namespace utils {
 	UUDPServer::UUDPServer(unsigned short port) {
-		this->port = port;
+		this->socket = std::make_unique<boost::asio::ip::udp::socket>(this->ioService, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
 	}
 
 	UUDPServer::~UUDPServer() {
-		
+		//this->stop();
 	}
 
-	bool UUDPServer::start() {
-		try {
-			this->socket = std::make_unique<boost::asio::ip::udp::socket>(this->ioService, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), this->port));
-		} catch (std::exception& e) {
-			std::cerr << "Start Server Error: " << e.what() << std::endl;
-			return false;
-		}
+	bool UUDPServer::asyncServiceRun() {
 		this->ioService.run();
 
 		return true;
 	}
 
-	void UUDPServer::stop() {
-		this->socket->close();
+	void UUDPServer::asyncServiceStop() {
+		this->closeSocket();
 		this->ioService.stop();
 	}	
 
-	int UUDPServer::recv(ByteBuffer* buffer) {
-		boost::system::error_code ec;
+	void UUDPServer::closeSocket() {
+		this->socket->close();
+	}
 
-		int size = this->socket->receive_from(boost::asio::buffer(this->recvBuffer), this->endpoint, 0, ec);
-		if (ec) {
-			std::cout << __FUNCTION__<< " Error: " <<  ec.message() << std::endl;
-			return ec.value();
+	size_t UUDPServer::recv(UByteBuffer* buffer, int recvBufferSize, UResult* result) {
+		if (result == nullptr ||
+			buffer == nullptr) {
+			return -1;
 		}
+		buffer->resize(recvBufferSize);
 
-		buffer->setData(this->recvBuffer.data(), size);
+		boost::system::error_code error;
+		size_t size = this->socket->receive_from(boost::asio::buffer(*buffer), this->endpoint, 0, error);
+		if (error) {
+			return result->failedReturnValue(error.value(), error.message());
+		}
 	
-		return size;
+		return result->successReturnValue(size);
 	}
 
-	int UUDPServer::send(const ByteBuffer& buffer) {
-		boost::system::error_code ec;
-		int size = this->socket->send_to(boost::asio::buffer(buffer), this->endpoint, 0, ec);
-		if (ec) {
-			std::cout << __FUNCTION__ << " Error: " << ec.message() << std::endl;
-			return ec.value();
+	size_t UUDPServer::send(const UByteBuffer& buffer, UResult* result) {
+		if (result == nullptr) {
+			return -1;
 		}
 
-		return size;
+		boost::system::error_code error;
+		size_t size = this->socket->send_to(boost::asio::buffer(buffer), this->endpoint, 0, error);
+		if (error) {
+			return result->failedReturnValue(error.value(), error.message());
+		}
+
+		return result->successReturnValue(size);
 	}
 
-	void UUDPServer::asyncRecv(UDPServerCallback callback) {
+	void UUDPServer::asyncRecv(int recvBufferSize, UAsyncCallback callback) {
+		this->recvBuffer.resize(recvBufferSize);
+
 		this->socket->async_receive_from(boost::asio::buffer(this->recvBuffer), this->endpoint, 
 			[=](boost::system::error_code ec, std::size_t bytesReceived) {
 				if (!ec && bytesReceived > 0) {
-					std::cout << "Received " << bytesReceived << " bytes from " << this->endpoint.address().to_string() << ":" << this->endpoint.port() << std::endl;
-
-					ByteBuffer buffer;
-					buffer.setData(this->recvBuffer.data(), bytesReceived);
-					callback(buffer);
+					callback(this->recvBuffer, bytesReceived);
 				}
 			}
 		);
 	}
 
-	void UUDPServer::asyncSend(const ByteBuffer& buffer) {
+	void UUDPServer::asyncSend(const UByteBuffer& buffer) {
 		this->socket->async_send_to(boost::asio::buffer(buffer), this->endpoint,
 			[this](boost::system::error_code ec, std::size_t bytesSent) {
 				if (!ec && bytesSent > 0) {
-					std::cout << "Sent " << bytesSent << " bytes to " << this->endpoint.address().to_string() << ":" << this->endpoint.port() << std::endl;
+
 				}
 			}
 		);

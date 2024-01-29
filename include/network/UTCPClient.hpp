@@ -5,22 +5,25 @@
 #include "type/UResult.hpp"
 #include "type/UByteBuffer.hpp"
 
-#include <vector>
+#include <string>
+#include <memory>
 #include <functional>
 
 #include "boost/asio.hpp"
 
 namespace utils {
-	class UUDPClient {
+	class UTCPClient {
 	public:
-		explicit UUDPClient(std::string& serverIpAddress, unsigned short port);
-		explicit UUDPClient(std::string&& serverIpAddress, unsigned short port);
-		virtual ~UUDPClient();
+		explicit UTCPClient(std::string& serverIpAddress, unsigned short port);
+		explicit UTCPClient(std::string&& serverIpAddress, unsigned short port);
+		virtual ~UTCPClient();
 
 	public:
-		void closeSocket();
+		bool connect(UResult* result);
+		void close();
 
 		// Sync
+		size_t recvUntil(UByteBuffer* buffer, const std::string& until, UResult* result);
 		size_t recv(UByteBuffer* buffer, int recvBufferSize, UResult* result);
 		size_t send(const UByteBuffer& buffer, UResult* result);
 
@@ -29,15 +32,12 @@ namespace utils {
 		void asyncSend(const UByteBuffer& buffer);
 
 	private:
-		void createEndpoint();
-
-	private:
-		unsigned short port;
 		std::string serverIpAddress;
+		unsigned short port;
 
-		boost::asio::io_service ioService;
-		boost::asio::ip::udp::socket socket;
-		boost::asio::ip::udp::endpoint receiverEndpoint;
+		boost::asio::io_context ioContext;
+		boost::asio::ip::tcp::endpoint endpoint;
+		std::shared_ptr<boost::asio::ip::tcp::socket> socket;
 
 		UByteBuffer recvBuffer;
 	};

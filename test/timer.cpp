@@ -38,7 +38,7 @@ TEST(THREAD, UTimerInterface) {
     ASSERT_TRUE(timer1Sec.start());
     ASSERT_TRUE(timer2Sec.start());
 
-    std::this_thread::sleep_for(std::chrono::seconds (4));
+    std::this_thread::sleep_for(std::chrono::seconds (2));
 
     timer1Sec.stop();
     timer2Sec.stop();
@@ -57,6 +57,6 @@ TEST(THREAD, UTimerManager) {
     timerManager.attachTimer(timer2Sec2);
     ASSERT_TRUE(timerManager.start());
 
-    std::this_thread::sleep_for(std::chrono::seconds (5));
+    std::this_thread::sleep_for(std::chrono::seconds (2));
     timerManager.stop();
 }

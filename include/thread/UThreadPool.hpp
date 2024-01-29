@@ -37,7 +37,7 @@ namespace utils {
             return result;
         }
 
-        unsigned int getThreadCount() {
+        size_t getThreadCount() {
             return this->threadList.size();
         }
 
@@ -56,7 +56,7 @@ namespace utils {
             }
         }
 
-        int getTaskQueueSize() {
+        size_t getTaskQueueSize() {
             return this->taskQueue.size();
         }
 

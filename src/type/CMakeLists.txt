@@ -1,4 +1,5 @@
-set (SOURCES ByteBuffer.cpp)
+set (SOURCES UResult.cpp 
+             UByteBuffer.cpp)
 
 
 

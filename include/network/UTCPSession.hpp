@@ -1,12 +1,15 @@
 #pragma once
 
-#include "boost/asio.hpp"
+#include "network/UNetworkDefine.hpp"
 
-#include "type/ByteBuffer.hpp"
+#include "type/UResult.hpp"
+#include "type/UByteBuffer.hpp"
 
+#include <vector>
 #include <memory>
+#include <functional>
 
-#define TCP_SERVER_BUFFER_SIZE 4096
+#include "boost/asio.hpp"
 
 namespace utils {
 	class UTCPSession : public std::enable_shared_from_this<UTCPSession> {
@@ -15,12 +18,24 @@ namespace utils {
 		virtual ~UTCPSession();
 
 	public:
-		int recv(ByteBuffer* buffer);
-		int send(const ByteBuffer& buffer);
+		static std::shared_ptr<UTCPSession> createSession(boost::asio::ip::tcp::socket socket);
+
+	public:
+		void closeSocket();
+
+		// Sync
+		size_t recv(UByteBuffer* buffer, int recvBufferSize, UResult* result);
+		size_t send(const UByteBuffer& buffer, UResult* result);
+
+		// Async
+		void asyncRecv(int recvBufferSize, UAsyncCallback callback);
+		void asyncRecv(UAsyncCallback callback);
+		void asyncSend(const UByteBuffer& buffer);
 
 	private:
 		boost::asio::ip::tcp::socket socket;
 
-		std::array<unsigned char, TCP_SERVER_BUFFER_SIZE> recvBuffer;
+		UByteBuffer recvBuffer;
 	};
+	typedef std::shared_ptr<UTCPSession> UTCPSessionPtr;
 };

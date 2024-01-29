@@ -1,6 +1,7 @@
 set (SOURCES throw_exception.cpp
              UTCPServer.cpp
              UTCPSession.cpp
+             UTCPClient.cpp
              UUDPServer.cpp
              UUDPClient.cpp)
 

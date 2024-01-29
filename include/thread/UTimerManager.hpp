@@ -17,7 +17,7 @@ namespace utils {
         void attachTimer(UTimerInterface& timer);
 
     public: // getter setter
-        int getTimerCount();
+        size_t getTimerCount();
 
     private:
         std::vector<UTimerInterface*> timerList;

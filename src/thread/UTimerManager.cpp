@@ -30,7 +30,7 @@ namespace utils {
         this->timerList.emplace_back(&timer);
     }
 
-    int UTimerManager::getTimerCount() {
+    size_t UTimerManager::getTimerCount() {
         return this->timerList.size();
     }
 }

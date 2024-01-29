@@ -3,63 +3,85 @@
 #include <iostream>
 
 namespace utils {
+	UUDPClient::UUDPClient(std::string& serverIpAddress, unsigned short port) 
+	: socket(this->ioService, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0))
+	{
+		this->serverIpAddress = serverIpAddress;
+		this->port			  = port;		
+		this->createEndpoint();
+	}
+
 	UUDPClient::UUDPClient(std::string&& serverIpAddress, unsigned short port) 
 	: socket(this->ioService, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0))
 	{
-		boost::asio::ip::udp::resolver resolver(this->ioService);
-		boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), serverIpAddress, std::to_string(port));
-		this->receiverEndpoint = *resolver.resolve(query);
+		this->serverIpAddress = serverIpAddress;
+		this->port			  = port;		
+		this->createEndpoint();
 	}
 
 	UUDPClient::~UUDPClient() {
 
 	}
 
-	int UUDPClient::recv(ByteBuffer* buffer) {
-		boost::system::error_code ec;
-		int size = this->socket.receive_from(boost::asio::buffer(this->recvBuffer), this->receiverEndpoint, 0, ec);
-		if (ec) {
-			std::cout << __FUNCTION__ << " Error: " << ec.message() << std::endl;
-			return ec.value();
-		}
-
-		buffer->setData(this->recvBuffer.data(), size);
-
-		return size;
+	void UUDPClient::closeSocket() {
+		this->socket.close();
 	}
 
-	int UUDPClient::send(const ByteBuffer& buffer) {
-		boost::system::error_code ec;
-		int size = this->socket.send_to(boost::asio::buffer(buffer), this->receiverEndpoint, 0, ec);
-		if (ec) {
-			std::cout << __FUNCTION__ << " Error: " << ec.message() << std::endl;
-			return ec.value();
+	size_t UUDPClient::recv(UByteBuffer* buffer, int recvBufferSize, UResult* result) {
+		if (result == nullptr ||
+			buffer == nullptr) {
+			return -1;
+		}
+		buffer->resize(recvBufferSize);
+		
+		boost::system::error_code error;
+		size_t size = this->socket.receive_from(boost::asio::buffer(*buffer), this->receiverEndpoint, 0, error);
+		if (error) {
+			std::cout << "UUDPClient::recv error: " << error.message() << std::endl;
+			return result->failedReturnValue(error.value(), error.message());
 		}
 
-		return size;
+		return result->successReturnValue(size);
 	}
 
-	void UUDPClient::asyncRecv(UDPClientCallback callback) {
+	size_t UUDPClient::send(const UByteBuffer& buffer, UResult* result) {
+		if (result == nullptr) {
+			return -1;
+		}
+
+		boost::system::error_code error;
+		size_t size = this->socket.send_to(boost::asio::buffer(buffer), this->receiverEndpoint, 0, error);
+		if (error) {
+			return result->failedReturnValue(error.value(), error.message());
+		}
+
+		return result->successReturnValue(size);
+	}
+
+	void UUDPClient::asyncRecv(int recvBufferSize, UAsyncCallback callback) {
+		this->recvBuffer.resize(recvBufferSize);
 		this->socket.async_receive_from(boost::asio::buffer(this->recvBuffer), this->receiverEndpoint,
 			[=](boost::system::error_code ec, std::size_t bytesReceived) {
 				if (!ec && bytesReceived > 0) {
-					std::cout << "Received " << bytesReceived << " bytes from " << this->receiverEndpoint.address().to_string() << ":" << this->receiverEndpoint.port() << std::endl;
-
-					ByteBuffer buffer;
-					buffer.setData(this->recvBuffer.data(), this->recvBuffer.size());
-					callback(buffer);
+					callback(this->recvBuffer, bytesReceived);
 				}
 			}
 		);
 	}
 
-	void UUDPClient::asyncSend(const ByteBuffer& buffer) {
+	void UUDPClient::asyncSend(const UByteBuffer& buffer) {
 		this->socket.async_send_to(boost::asio::buffer(buffer), this->receiverEndpoint,
 			[this](boost::system::error_code ec, std::size_t bytesSent) {
 				if (!ec && bytesSent > 0) {
-					std::cout << "Sent " << bytesSent << " bytes to " << this->receiverEndpoint.address().to_string() << ":" << this->receiverEndpoint.port() << std::endl;
+					
 				}
 			}
 		);
+	}
+
+	void UUDPClient::createEndpoint() {
+		boost::asio::ip::udp::resolver resolver(this->ioService);
+		boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), this->serverIpAddress, std::to_string(this->port));
+		this->receiverEndpoint = *resolver.resolve(query);
 	}
 }
