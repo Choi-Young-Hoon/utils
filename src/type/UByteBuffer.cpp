@@ -31,7 +31,15 @@ namespace utils {
 		this->insert(this->begin(), data, data + length);
 	}
 
+	void UByteBuffer::setData(UByteBuffer& buffer) {
+		*this = buffer;
+	}
+
 	void UByteBuffer::append(unsigned char* data, int length) {
 		this->insert(this->end(), data, data + length);
+	}
+
+	void UByteBuffer::append(UByteBuffer& buffer) {
+		this->insert(this->end(), buffer.begin(), buffer.end());
 	}
 }

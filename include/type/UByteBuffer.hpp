@@ -14,8 +14,12 @@ namespace utils {
 
 	public:
 		void setText(std::string& str);
+		
 		void setData(unsigned char* data, int length);
+		void setData(UByteBuffer& buffer);
+
 		void append(unsigned char* data, int length);
+		void append(UByteBuffer& buffer);
 
 	private:
 
